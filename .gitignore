@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+data/
+checkpoints*/
+r2/cache/**/*.npz
+r2/cache/**/*.pt
+*.pth
+*.npz
