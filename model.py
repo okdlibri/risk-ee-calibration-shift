@@ -220,8 +220,9 @@ class EarlyExitResNet(nn.Module):
         S_k(x) = max(0, ||feat - mu_k||_2 / ref_k  -  1)
 
         sig_k here stores the mean L2 distance from the training mean (ref_k).
-        S_k ≈ 0  for clean in-distribution samples  (dist ≈ ref)
-        S_k > 0  for corrupted / OOD samples         (dist > ref)
+        S_k = 0  if the distance is at most the mean training distance ref_k
+        S_k > 0  if it is larger (this includes many clean inputs, since
+                 ref_k is a mean; S_k is a distance score, not an OOD label)
         Shape: (B,)
         """
         dist = (feat - mu).norm(dim=1)              # (B,)
