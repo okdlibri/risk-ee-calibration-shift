@@ -131,7 +131,7 @@ def stats(A):
 
 def make_model():
     from model import EarlyExitResNet
-    return EarlyExitResNet(num_classes=200, relative_flops=[0.30, 0.62, 1.0]).to(DEV)
+    return EarlyExitResNet(num_classes=200, relative_flops=[0.5482, 0.7741, 1.0]).to(DEV)
 
 
 @torch.no_grad()
@@ -184,8 +184,8 @@ def train_ee():
         for n, p in model.named_parameters():
             p.requires_grad_(not frozen or any(h in n for h in ('exit1', 'exit2', 'final_fc')))
         # Phase 1: the new exit heads use EXIT_HEAD_LR (selected on the validation
-        # split by a frozen-backbone linear probe, logs/tiny_head_lr_probe.log:
-        # at the CIFAR rate 0.01 the 200-way heads stay near uniform); final_fc
+        # split by a frozen-backbone probe of the exit heads: at the CIFAR rate
+        # 0.01 the 200-way heads stay near uniform); final_fc
         # keeps the CIFAR rate. Phase 2: all parameters at the CIFAR rate.
         heads = [p for n, p in model.named_parameters() if p.requires_grad and n.startswith(('exit1', 'exit2'))]
         rest = [p for n, p in model.named_parameters() if p.requires_grad and not n.startswith(('exit1', 'exit2'))]
