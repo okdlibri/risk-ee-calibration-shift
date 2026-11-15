@@ -1,8 +1,11 @@
 __pycache__/
 *.pyc
 data/
+cache/
 checkpoints*/
-r2/cache/**/*.npz
-r2/cache/**/*.pt
+results_*/
+figures*/
+tex/
 *.pth
+*.pt
 *.npz

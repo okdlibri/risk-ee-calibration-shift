@@ -1,0 +1,63 @@
+{
+ "selection": {
+  "full": {
+   "method": "full",
+   "tau": 0.0
+  },
+  "conf": {
+   "method": "conf",
+   "tau": 0.7685081542733995
+  },
+  "entropy": {
+   "method": "entropy",
+   "tau": 0.24373374980074147
+  },
+  "pets_conf": {
+   "method": "pets_conf",
+   "tau": 0.9489800872007292
+  },
+  "risk": {
+   "method": "risk",
+   "tau": 0.30144559521615294,
+   "l1": 0.3,
+   "l2": 0.1,
+   "score": "dist"
+  }
+ },
+ "exitfrac/clean/conf": [
+  0.32924107142857145,
+  0.24441964285714285
+ ],
+ "exitfrac/clean/entropy": [
+  0.35044642857142855,
+  0.19866071428571427
+ ],
+ "exitfrac/clean/pets_conf": [
+  0.29464285714285715,
+  0.32142857142857145
+ ],
+ "exitfrac/clean/risk": [
+  0.359375,
+  0.17075892857142858
+ ],
+ "bs1/clean/full": 7.939859400037676,
+ "bs1/clean/conf": 7.106106699910015,
+ "bs1/clean/entropy": 7.203919899649918,
+ "bs1/clean/pets_conf": 7.234527700114995,
+ "bs1/clean/risk": 7.3149906997568905,
+ "bs1/corrupt/full": 8.03394339978695,
+ "bs1/corrupt/conf": 8.43515169993043,
+ "bs1/corrupt/entropy": 8.413879700005054,
+ "bs1/corrupt/pets_conf": 8.36830549966544,
+ "bs1/corrupt/risk": 8.520658100023866,
+ "bs128/clean/full": 6.792934932621263,
+ "bs128/clean/conf": 4.674318415449567,
+ "bs128/clean/entropy": 4.685139062140869,
+ "bs128/clean/pets_conf": 4.639968750000532,
+ "bs128/clean/risk": 4.710534710154336,
+ "bs128/corrupt/full": 6.809480022639036,
+ "bs128/corrupt/conf": 5.570903459946359,
+ "bs128/corrupt/entropy": 5.622218638434008,
+ "bs128/corrupt/pets_conf": 5.579526339196101,
+ "bs128/corrupt/risk": 5.617981584821662
+}
