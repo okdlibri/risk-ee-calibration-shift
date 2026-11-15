@@ -2,7 +2,7 @@ r"""
 python -m riskee.make_numbers -- single source of truth for every number quoted in
 the paper.
 
-Reads results/*.json (and the cached outputs for per-exit accuracies) and writes
+Reads results/*.json only and writes
 tex/numbers.tex, which defines
     \R{<key>}   e.g. \R{cnn.risk.clean.ece} -> 0.0187
 An undefined key typesets as a bold red ??key?? and emits a LaTeX warning, so
@@ -206,20 +206,15 @@ for short in ('cnn', 'vit', 'tiny'):
         below = [s for s in range(1, 6) if P['risk'][t][str(s)]['exit_dist'][2] < fin0]
         put(f'thex.{short}.{t.split("_")[0]}.firstbelow', str(below[0]) if below else 'none')
 
-# accuracy of each exit on the clean test set (model property)
-sys.path.insert(0, ROOT)
-from riskee.analysis import DS, load_ref, CACHE_DIR
-from riskee.analysis import run as run_policy
+# accuracy of each exit on the clean test set (model property), and accuracy of the
+# inputs that Risk-EE lets exit at exit k (clean test, main operating point);
+# computed from the cached outputs by riskee/cache_stats.py
+CS = json.load(open(os.path.join(R, 'cache_stats.json')))
 for short, tag in TAGS.items():
-    ds = DS(os.path.join(CACHE_DIR, tag, 'test.npz'), load_ref(tag))
     for k in range(3):
-        put(f'exitacc.{short}.{k + 1}', pct(float(np.mean(ds.pred[k] == ds.y)), 1))
-    # accuracy of the inputs that Risk-EE lets exit at exit k (clean test, main operating point)
-    r = json.load(open(os.path.join(R, f'{tag}_main.json'))); s_ = r['selection']['risk']; c_ = COSTS[ARCH[short]]
-    _, ex = run_policy(ds, 'risk', {'l1': s_['l1'], 'l2': s_['l2'], 'score': 'dist', 'costs': c_, 'T': None}, s_['tau'], c_)
+        put(f'exitacc.{short}.{k + 1}', pct(CS['exitacc'][tag][k], 1))
     for k in range(2):
-        m_ = ex == k
-        put(f'exitsub.{short}.{k + 1}', pct(float(np.mean(ds.pred[k][m_] == ds.y[m_])), 1))
+        put(f'exitsub.{short}.{k + 1}', pct(CS['exitsub'][tag][k], 1))
 
 # Risk-EE on per-exit-TS outputs vs per-exit TS + confidence routing (riskee/pair_risk_pets.py)
 p_ = os.path.join(R, 'pair_risk_pets.json')

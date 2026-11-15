@@ -90,6 +90,7 @@ with 2000 paired bootstrap resamples over test images.
     python -m riskee.latency --arch vit
     python -m riskee.s_stats
     python -m riskee.pair_risk_pets
+    python -m riskee.cache_stats          # per-exit accuracies, reliability-diagram bins
     python -m riskee.flops_handcount      # check of the ResNet-18 exit costs
 
 **4. Tables, figures and numbers**
@@ -99,9 +100,9 @@ with 2000 paired bootstrap resamples over test images.
     python -m riskee.make_figures    # figures/*.pdf
     python -m riskee.figures_sk      # figures/sk_distribution_*.pdf
 
-`make_tables` reads only `results/`.  `make_numbers` also reads the clean test
-caches (per-exit accuracies), and `make_figures` (reliability diagrams) and
-`figures_sk` read the caches as well.
+Step 4 reads only `results/`: every number, table and figure can be regenerated
+from the result files in this repository without the trained models or the
+cached outputs.
 
 ## Result files
 
@@ -111,8 +112,9 @@ caches (per-exit accuracies), and `make_figures` (reliability diagrams) and
 | `results/budget_sweep_main.json` | `riskee.budget_sweep` | ECE-vs-budget figures |
 | `results/latency_{cnn,vit}_main.json` | `riskee.latency` | latency table |
 | `results/<tag>_theory_check_main.json` | `riskee.theory_check` | empirical check of the theoretical results |
-| `results/s_stats.json` | `riskee.s_stats` | S_k statistics |
+| `results/s_stats.json` | `riskee.s_stats` | S_k statistics and figures |
 | `results/pair_risk_pets.json` | `riskee.pair_risk_pets` | Risk-EE on per-exit temperature-scaled outputs vs. per-exit TS |
+| `results/cache_stats.json` | `riskee.cache_stats` | per-exit accuracies, reliability diagrams |
 
 Tags: `cnn` (ResNet-18 / CIFAR-10, main model), `cnn_seed42`, `cnn_seed123`,
 `cnn_seed456` (additional seeds), `vit` (DeiT-Small / CIFAR-100), `tiny`

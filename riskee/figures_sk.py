@@ -1,12 +1,12 @@
 """
 python -m riskee.figures_sk -- S_k distribution figures (both architectures),
-generated only from the cached model outputs.
+drawn from results/s_stats.json (written by riskee/s_stats.py).
 
 Output: figures/sk_distribution_{vit,cnn}.pdf and .png
 Palette: reference categorical slots 1-2 (blue #2a78d6, orange #eb6834; a
 validated adjacent pair) for the two corruption families, neutral gray for clean.
 """
-import os, sys
+import os, sys, json
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
@@ -14,8 +14,6 @@ import matplotlib.pyplot as plt
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
-from riskee.analysis import DS, load_ref
-from riskee.common import CACHE_DIR
 
 PNG = IMG = os.path.join(ROOT, 'figures')
 os.makedirs(IMG, exist_ok=True)
@@ -40,16 +38,15 @@ def save(fig, name):
 def sk_figure(tag, name, title):
     """Share of inputs with S_k > 0 (top) and mean S_k (bottom), exits 1-2,
     for clean test data and Gaussian noise / fog at severities 1, 3, 5."""
-    ref = load_ref(tag); d = os.path.join(CACHE_DIR, tag)
+    st = json.load(open(os.path.join(ROOT, 'results', 's_stats.json')))[tag]
     conds = [('clean', 'test', GRAY)] + \
             [(f'noise {s}', f'c_gaussian_noise_{s}', BLUE) for s in (1, 3, 5)] + \
             [(f'fog {s}', f'c_fog_{s}', ORANGE) for s in (1, 3, 5)]
-    S = {lab: DS(os.path.join(d, f + '.npz'), ref).S['dist'] for lab, f, _ in conds}
     fig, axes = plt.subplots(2, 2, figsize=(7.0, 3.6), sharex=True)
     x = np.arange(len(conds))
     for k in range(2):
-        pos = [100 * (S[lab][k] > 0).mean() for lab, _, _ in conds]
-        mean = [S[lab][k].mean() for lab, _, _ in conds]
+        pos = [100 * st[f][f'S{k + 1}_pos'] for _, f, _ in conds]
+        mean = [st[f][f'S{k + 1}_mean'] for _, f, _ in conds]
         for row, vals, ylab in ((0, pos, r'inputs with $S_k>0$ (%)'), (1, mean, r'mean $S_k$')):
             ax = axes[row, k]
             ax.bar(x, vals, width=0.62, color=[c for _, _, c in conds], edgecolor='white', linewidth=1.0, zorder=2)

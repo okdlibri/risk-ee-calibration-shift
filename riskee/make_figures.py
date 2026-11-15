@@ -1,7 +1,7 @@
 """Generate the results figures of the paper from results/*_main.json and the caches.
 
-Every figure is drawn from the same JSON files as the tables.  The reliability diagrams
-recompute per-sample outputs from the caches and assert that they reproduce the stored ECE.
+Every figure is drawn from the JSON files in results/ (the reliability diagrams from
+results/cache_stats.json, written by riskee/cache_stats.py).
 Output: figures/*.pdf|png
 Colours: fixed categorical order (method -> colour never changes between figures), plus
 distinct markers / line styles so that identity does not rely on colour alone.
@@ -14,7 +14,6 @@ import matplotlib.pyplot as plt
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT)
-from riskee.analysis import DS, run, load_ref, COSTS, CACHE_DIR, ece as ece_fn  # noqa: E402
 
 R = os.path.join(ROOT, 'results')
 OUT = os.path.join(ROOT, 'figures')
@@ -163,34 +162,17 @@ def fig_lambda():
 
 
 # ── 5. reliability diagrams (recomputed from caches, checked against JSON) ──
-def params(tag, d, m):
-    c = COSTS['vit' if tag == 'vit' else ('tiny' if tag == 'tiny' else 'cnn')]
-    s = d['selection'][m]
-    if m == 'risk':
-        return {'l1': s['l1'], 'l2': s['l2'], 'score': 'dist', 'costs': c, 'T': None}, s['tau'], c
-    if m == 'pets_conf':
-        return {'T': d['T_exit']}, s['tau'], c
-    if m == 'ts_full':
-        return {'T': d['T_full']}, 0.0, c
-    return {}, s.get('tau', 0.0), c
-
-
 def fig_reliability():
     tags = ['cnn', 'vit']; ms = ['full', 'conf', 'pets_conf', 'risk']; nb = 15
     fig, axes = plt.subplots(2, 4, figsize=(7.0, 3.7), sharex=True, sharey=True)
     for i, tag in enumerate(tags):
-        d = L(f'{tag}_main.json'); ref = load_ref(tag)
-        ds = DS(os.path.join(CACHE_DIR, tag, 'test.npz'), ref)
+        d = L(f'{tag}_main.json'); rel = L('cache_stats.json')['reliability'][tag]
         for j, m in enumerate(ms):
-            p, tau, c = params(tag, d, m)
-            probs, ex = run(ds, m, p, tau, c)
-            conf = probs.max(1); ok = probs.argmax(1) == ds.y
-            e = ece_fn(conf, ok)
-            assert abs(e - d['clean'][m]['ece']) < 1e-6, (tag, m, e, d['clean'][m]['ece'])
+            e = rel[m]['ece']
+            assert abs(e - d['clean'][m]['ece']) < 1e-9, (tag, m, e, d['clean'][m]['ece'])
             edges = np.linspace(0, 1, nb + 1)
-            idx = np.clip(np.digitize(conf, edges, right=True) - 1, 0, nb - 1)  # same bins as analysis.ece
             ax = axes[i, j]; lab, col, _, _ = STYLE[m]
-            accs = [ok[idx == b].mean() if (idx == b).any() else np.nan for b in range(nb)]
+            accs = [np.nan if a is None else a for a in rel[m]['acc']]
             ax.bar(edges[:-1], np.nan_to_num(accs), width=1 / nb, align='edge', color=col, alpha=0.85, ec='white', lw=0.5)
             ax.plot([0, 1], [0, 1], color=INK2, lw=0.8, ls='--')
             ax.set_title(f'{lab}\nECE {e:.4f}', fontsize=7.5)
