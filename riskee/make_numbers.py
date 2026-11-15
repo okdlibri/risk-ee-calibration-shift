@@ -176,6 +176,11 @@ from riskee.analysis import COSTS
 for a in ('cnn', 'tiny', 'vit'):
     put(f'costs.{a}.e1', f3(COSTS[a][0])); put(f'costs.{a}.e2', f3(COSTS[a][1]))
 
+# range over the four ResNet-18 training runs (clean ECE)
+for m in ('risk', 'conf', 'entropy'):
+    v = [json.load(open(os.path.join(R, f'{TAGS[s]}_main.json')))['clean'][m]['ece'] for s in ('cnn', 'seedA', 'seedB', 'seedC')]
+    put(f'cnnruns.{m}.clean.ecemin', f4(min(v))); put(f'cnnruns.{m}.clean.ecemax', f4(max(v)))
+
 # per-severity means over corruption types (severity 0 = clean): ECE, FLOPs, share at the final exit
 for short, tag in TAGS.items():
     r = json.load(open(os.path.join(R, f'{tag}_main.json'))); P = r['corrupt_per_set']

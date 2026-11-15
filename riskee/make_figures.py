@@ -83,14 +83,14 @@ def fig_budget():
 def fig_budget_seeds():
     B = L('budget_sweep_main.json')
     fig, axes = plt.subplots(1, 3, figsize=(7.0, 2.3), sharey=True)
-    for ax, tag in zip(axes, ['cnn_seed42', 'cnn_seed123', 'cnn_seed456']):
+    for ax, tag, run in zip(axes, ['cnn_seed42', 'cnn_seed123', 'cnn_seed456'], (2, 3, 4)):
         v = B[tag]['budgets']; bs = sorted(v, key=float); x = [float(b) for b in bs]
         for key, m in [('d_conf', 'conf'), ('d_entropy', 'entropy'), ('d_pets_conf', 'pets_conf')]:
             d = np.array([v[b]['risk'][key] for b in bs]); lab, col, mk, _ = STYLE[m]
             ax.fill_between(x, d[:, 1], d[:, 2], color=col, alpha=0.18, lw=0)
             ax.plot(x, d[:, 0], color=col, marker=mk, lw=1.3, ms=4, label=f'Risk-EE $-$ {lab}')
         ax.axhline(0, color=INK2, lw=0.8); ax.axvline(0.80, color=INK2, lw=0.8, ls='--')
-        ax.set_title(f'ResNet-18, seed {tag.split("seed")[1]}'); ax.set_xlabel('FLOPs budget'); grid(ax)
+        ax.set_title(f'ResNet-18, run {run}'); ax.set_xlabel('FLOPs budget'); grid(ax)
     axes[0].set_ylabel('Paired clean ECE difference'); axes[0].legend(frameon=False, loc='upper left', fontsize=6.5)
     fig.tight_layout(); save(fig, 'fig_budget_seeds')
 

@@ -72,10 +72,12 @@ def main_table(tag, label, caption):
 def seeds_table():
     tags = ['cnn', 'cnn_seed42', 'cnn_seed123', 'cnn_seed456']
     D = {t: L(f'{t}_main.json') for t in tags}
-    head = ['Main', 'Seed 42', 'Seed 123', 'Seed 456']
+    head = ['Run 1 (main)', 'Run 2', 'Run 3', 'Run 4']
     lines = [r'\begin{table*}', r'  \centering',
              r'  \caption{Four independently trained ResNet-18 early-exit models on CIFAR-10 / CIFAR-10-C'
              r' at budget 0.80, each with its own validation-selected $(\lambda_1, \lambda_2)$.'
+             r' Runs 1 and 2 use random seed 42, runs 3 and 4 seeds 123 and 456; GPU training is not'
+             r' deterministic, so runs with the same seed give different models.'
              r' Upper block: \our{} itself.  Lower block: paired ECE difference \our{} $-$ method'
              r' (negative: \our{} better calibrated); $^{*}$ the 95\% paired bootstrap interval'
              r' excludes zero.  Full network + TS uses 100\% FLOPs.}',
